@@ -1,7 +1,6 @@
 # Big Data Analysis of Air Quality in Indian Cities and AQI Prediction using Apache Spark
 
-Mini project for the subject **Big Data Analysis**.
-[Your name] · [Roll number] · [College name], Department of [Branch] · [Year]
+Vismaya Katkar
 
 This project processes 29,531 days of air quality data from 26 Indian cities (2015–2020) with **Apache Spark**.
 It analyses pollution patterns with **Spark SQL**, predicts the Air Quality Index (AQI) with **Spark MLlib**,
