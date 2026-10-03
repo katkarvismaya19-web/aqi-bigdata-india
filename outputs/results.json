@@ -1,0 +1,820 @@
+{
+  "overview": {
+    "rows": 29531,
+    "cols": 16,
+    "cities": 26,
+    "start": "2015-01-01",
+    "end": "2020-07-01",
+    "aqi_missing_pct": 15.85,
+    "missing": {
+      "City": 0.0,
+      "Date": 0.0,
+      "PM25": 15.57,
+      "PM10": 37.72,
+      "NO": 12.13,
+      "NO2": 12.14,
+      "NOx": 14.17,
+      "NH3": 34.97,
+      "CO": 6.97,
+      "SO2": 13.05,
+      "O3": 13.62,
+      "Benzene": 19.04,
+      "Toluene": 27.23,
+      "Xylene": 61.32,
+      "AQI": 15.85,
+      "AQI_Bucket": 15.85
+    },
+    "clean_rows": 24757
+  },
+  "city_aqi": [
+    {
+      "City": "Ahmedabad",
+      "avg_aqi": 388.3,
+      "avg_pm25": 64.1,
+      "days": 1241
+    },
+    {
+      "City": "Delhi",
+      "avg_aqi": 259.5,
+      "avg_pm25": 117.5,
+      "days": 1999
+    },
+    {
+      "City": "Patna",
+      "avg_aqi": 240.8,
+      "avg_pm25": 124.8,
+      "days": 1459
+    },
+    {
+      "City": "Gurugram",
+      "avg_aqi": 225.1,
+      "avg_pm25": 115.6,
+      "days": 1453
+    },
+    {
+      "City": "Lucknow",
+      "avg_aqi": 218.0,
+      "avg_pm25": 109.8,
+      "days": 1893
+    },
+    {
+      "City": "Talcher",
+      "avg_aqi": 172.9,
+      "avg_pm25": 62.0,
+      "days": 698
+    },
+    {
+      "City": "Jorapokhar",
+      "avg_aqi": 159.3,
+      "avg_pm25": 64.3,
+      "days": 771
+    },
+    {
+      "City": "Brajrajnagar",
+      "avg_aqi": 150.3,
+      "avg_pm25": 63.9,
+      "days": 713
+    },
+    {
+      "City": "Kolkata",
+      "avg_aqi": 140.6,
+      "avg_pm25": 64.7,
+      "days": 754
+    },
+    {
+      "City": "Guwahati",
+      "avg_aqi": 140.1,
+      "avg_pm25": 61.5,
+      "days": 495
+    },
+    {
+      "City": "Jaipur",
+      "avg_aqi": 133.7,
+      "avg_pm25": 54.7,
+      "days": 1094
+    },
+    {
+      "City": "Bhopal",
+      "avg_aqi": 132.8,
+      "avg_pm25": 50.2,
+      "days": 278
+    },
+    {
+      "City": "Amritsar",
+      "avg_aqi": 119.9,
+      "avg_pm25": 55.1,
+      "days": 1126
+    },
+    {
+      "City": "Visakhapatnam",
+      "avg_aqi": 117.3,
+      "avg_pm25": 47.6,
+      "days": 1171
+    },
+    {
+      "City": "Chennai",
+      "avg_aqi": 114.5,
+      "avg_pm25": 50.2,
+      "days": 1884
+    },
+    {
+      "City": "Hyderabad",
+      "avg_aqi": 109.2,
+      "avg_pm25": 47.1,
+      "days": 1880
+    },
+    {
+      "City": "Mumbai",
+      "avg_aqi": 105.4,
+      "avg_pm25": 35.2,
+      "days": 775
+    },
+    {
+      "City": "Kochi",
+      "avg_aqi": 104.3,
+      "avg_pm25": 31.5,
+      "days": 158
+    },
+    {
+      "City": "Chandigarh",
+      "avg_aqi": 96.5,
+      "avg_pm25": 41.3,
+      "days": 299
+    },
+    {
+      "City": "Amaravati",
+      "avg_aqi": 95.3,
+      "avg_pm25": 38.1,
+      "days": 841
+    },
+    {
+      "City": "Bengaluru",
+      "avg_aqi": 94.3,
+      "avg_pm25": 35.9,
+      "days": 1910
+    },
+    {
+      "City": "Ernakulam",
+      "avg_aqi": 92.4,
+      "avg_pm25": 24.9,
+      "days": 153
+    },
+    {
+      "City": "Thiruvananthapuram",
+      "avg_aqi": 75.9,
+      "avg_pm25": 28.2,
+      "days": 1052
+    },
+    {
+      "City": "Coimbatore",
+      "avg_aqi": 73.0,
+      "avg_pm25": 29.4,
+      "days": 344
+    },
+    {
+      "City": "Shillong",
+      "avg_aqi": 53.8,
+      "avg_pm25": 24.7,
+      "days": 205
+    },
+    {
+      "City": "Aizawl",
+      "avg_aqi": 34.8,
+      "avg_pm25": 17.0,
+      "days": 111
+    }
+  ],
+  "yearly": [
+    {
+      "Year": 2015,
+      "avg_aqi": 211.4,
+      "cities": 7
+    },
+    {
+      "Year": 2016,
+      "avg_aqi": 196.5,
+      "cities": 9
+    },
+    {
+      "Year": 2017,
+      "avg_aqi": 177.8,
+      "cities": 15
+    },
+    {
+      "Year": 2018,
+      "avg_aqi": 172.4,
+      "cities": 18
+    },
+    {
+      "Year": 2019,
+      "avg_aqi": 152.6,
+      "cities": 23
+    },
+    {
+      "Year": 2020,
+      "avg_aqi": 112.7,
+      "cities": 26
+    }
+  ],
+  "yearly_fixed": [
+    {
+      "Year": 2015,
+      "avg_aqi": 211.4
+    },
+    {
+      "Year": 2016,
+      "avg_aqi": 200.3
+    },
+    {
+      "Year": 2017,
+      "avg_aqi": 179.1
+    },
+    {
+      "Year": 2018,
+      "avg_aqi": 209.2
+    },
+    {
+      "Year": 2019,
+      "avg_aqi": 196.1
+    },
+    {
+      "Year": 2020,
+      "avg_aqi": 137.0
+    }
+  ],
+  "full_cities": [
+    "Patna",
+    "Delhi",
+    "Chennai",
+    "Lucknow",
+    "Ahmedabad",
+    "Bengaluru",
+    "Hyderabad"
+  ],
+  "monthly": [
+    {
+      "Month": 1,
+      "avg_aqi": 223.6,
+      "avg_pm25": 108.0
+    },
+    {
+      "Month": 2,
+      "avg_aqi": 193.2,
+      "avg_pm25": 82.3
+    },
+    {
+      "Month": 3,
+      "avg_aqi": 158.8,
+      "avg_pm25": 62.7
+    },
+    {
+      "Month": 4,
+      "avg_aqi": 140.3,
+      "avg_pm25": 52.5
+    },
+    {
+      "Month": 5,
+      "avg_aqi": 135.5,
+      "avg_pm25": 50.5
+    },
+    {
+      "Month": 6,
+      "avg_aqi": 120.2,
+      "avg_pm25": 43.0
+    },
+    {
+      "Month": 7,
+      "avg_aqi": 110.9,
+      "avg_pm25": 37.0
+    },
+    {
+      "Month": 8,
+      "avg_aqi": 113.6,
+      "avg_pm25": 33.5
+    },
+    {
+      "Month": 9,
+      "avg_aqi": 115.2,
+      "avg_pm25": 36.8
+    },
+    {
+      "Month": 10,
+      "avg_aqi": 181.4,
+      "avg_pm25": 75.5
+    },
+    {
+      "Month": 11,
+      "avg_aqi": 229.4,
+      "avg_pm25": 111.2
+    },
+    {
+      "Month": 12,
+      "avg_aqi": 224.5,
+      "avg_pm25": 111.4
+    }
+  ],
+  "season": [
+    {
+      "Season": "Winter",
+      "avg_aqi": 213.8
+    },
+    {
+      "Season": "Post-Monsoon",
+      "avg_aqi": 205.6
+    },
+    {
+      "Season": "Summer",
+      "avg_aqi": 144.7
+    },
+    {
+      "Season": "Monsoon",
+      "avg_aqi": 115.3
+    }
+  ],
+  "bucket": [
+    {
+      "AQI_Bucket": "Moderate",
+      "days": 8829,
+      "pct": "35.7"
+    },
+    {
+      "AQI_Bucket": "Satisfactory",
+      "days": 8224,
+      "pct": "33.2"
+    },
+    {
+      "AQI_Bucket": "Poor",
+      "days": 2781,
+      "pct": "11.2"
+    },
+    {
+      "AQI_Bucket": "Very Poor",
+      "days": 2337,
+      "pct": "9.4"
+    },
+    {
+      "AQI_Bucket": "Good",
+      "days": 1341,
+      "pct": "5.4"
+    },
+    {
+      "AQI_Bucket": "Severe",
+      "days": 1245,
+      "pct": "5.0"
+    }
+  ],
+  "heat": {
+    "Jan": {
+      "Ahmedabad": 431.0,
+      "Bengaluru": 112.0,
+      "Chennai": 128.0,
+      "Delhi": 360.0,
+      "Hyderabad": 140.0,
+      "Kolkata": 289.0,
+      "Lucknow": 332.0,
+      "Mumbai": 167.0
+    },
+    "Feb": {
+      "Ahmedabad": 498.0,
+      "Bengaluru": 110.0,
+      "Chennai": 118.0,
+      "Delhi": 299.0,
+      "Hyderabad": 124.0,
+      "Kolkata": 231.0,
+      "Lucknow": 279.0,
+      "Mumbai": 155.0
+    },
+    "Mar": {
+      "Ahmedabad": 440.0,
+      "Bengaluru": 108.0,
+      "Chennai": 117.0,
+      "Delhi": 223.0,
+      "Hyderabad": 110.0,
+      "Kolkata": 140.0,
+      "Lucknow": 214.0,
+      "Mumbai": 114.0
+    },
+    "Apr": {
+      "Ahmedabad": 354.0,
+      "Bengaluru": 101.0,
+      "Chennai": 105.0,
+      "Delhi": 248.0,
+      "Hyderabad": 109.0,
+      "Kolkata": 78.0,
+      "Lucknow": 186.0,
+      "Mumbai": 86.0
+    },
+    "May": {
+      "Ahmedabad": 276.0,
+      "Bengaluru": 85.0,
+      "Chennai": 115.0,
+      "Delhi": 259.0,
+      "Hyderabad": 107.0,
+      "Kolkata": 71.0,
+      "Lucknow": 191.0,
+      "Mumbai": 77.0
+    },
+    "Jun": {
+      "Ahmedabad": 285.0,
+      "Bengaluru": 72.0,
+      "Chennai": 108.0,
+      "Delhi": 199.0,
+      "Hyderabad": 91.0,
+      "Kolkata": 62.0,
+      "Lucknow": 153.0,
+      "Mumbai": 69.0
+    },
+    "Jul": {
+      "Ahmedabad": 352.0,
+      "Bengaluru": 94.0,
+      "Chennai": 108.0,
+      "Delhi": 138.0,
+      "Hyderabad": 80.0,
+      "Kolkata": 57.0,
+      "Lucknow": 102.0,
+      "Mumbai": 67.0
+    },
+    "Aug": {
+      "Ahmedabad": 383.0,
+      "Bengaluru": 82.0,
+      "Chennai": 105.0,
+      "Delhi": 134.0,
+      "Hyderabad": 82.0,
+      "Kolkata": 62.0,
+      "Lucknow": 98.0,
+      "Mumbai": 69.0
+    },
+    "Sep": {
+      "Ahmedabad": 377.0,
+      "Bengaluru": 78.0,
+      "Chennai": 119.0,
+      "Delhi": 157.0,
+      "Hyderabad": 89.0,
+      "Kolkata": 65.0,
+      "Lucknow": 105.0,
+      "Mumbai": 73.0
+    },
+    "Oct": {
+      "Ahmedabad": 448.0,
+      "Bengaluru": 97.0,
+      "Chennai": 121.0,
+      "Delhi": 312.0,
+      "Hyderabad": 125.0,
+      "Kolkata": 144.0,
+      "Lucknow": 243.0,
+      "Mumbai": 107.0
+    },
+    "Nov": {
+      "Ahmedabad": 508.0,
+      "Bengaluru": 94.0,
+      "Chennai": 119.0,
+      "Delhi": 402.0,
+      "Hyderabad": 127.0,
+      "Kolkata": 244.0,
+      "Lucknow": 370.0,
+      "Mumbai": 145.0
+    },
+    "Dec": {
+      "Ahmedabad": 396.0,
+      "Bengaluru": 102.0,
+      "Chennai": 112.0,
+      "Delhi": 371.0,
+      "Hyderabad": 129.0,
+      "Kolkata": 274.0,
+      "Lucknow": 358.0,
+      "Mumbai": 168.0
+    }
+  },
+  "diag": [
+    {
+      "City": "Delhi",
+      "aqi": 259.5,
+      "pm25": 117.5,
+      "pm10": 232.9,
+      "co": 1.99,
+      "no2": 50.8,
+      "so2": 15.9
+    },
+    {
+      "City": "Mumbai",
+      "aqi": 105.4,
+      "pm25": 35.2,
+      "pm10": 96.6,
+      "co": 1.22,
+      "no2": 25.5,
+      "so2": 14.6
+    },
+    {
+      "City": "Ahmedabad",
+      "aqi": 388.3,
+      "pm25": 64.1,
+      "pm10": 110.8,
+      "co": 18.65,
+      "no2": 56.4,
+      "so2": 53.6
+    }
+  ],
+  "lockdown": [
+    {
+      "City": "Ahmedabad",
+      "aqi_2019": 468.1,
+      "aqi_2020": 129.2,
+      "pm25_2019": 74.9,
+      "pm25_2020": 28.9,
+      "no2_2019": 76.0,
+      "no2_2020": 21.9,
+      "aqi_change_pct": -72.4
+    },
+    {
+      "City": "Lucknow",
+      "aqi_2019": 204.6,
+      "aqi_2020": 111.9,
+      "pm25_2019": 93.9,
+      "pm25_2020": 55.4,
+      "no2_2019": 35.9,
+      "no2_2020": 14.8,
+      "aqi_change_pct": -45.3
+    },
+    {
+      "City": "Delhi",
+      "aqi_2019": 225.5,
+      "aqi_2020": 125.4,
+      "pm25_2019": 86.2,
+      "pm25_2020": 48.5,
+      "no2_2019": 49.9,
+      "no2_2020": 22.4,
+      "aqi_change_pct": -44.4
+    },
+    {
+      "City": "Gurugram",
+      "aqi_2019": 212.4,
+      "aqi_2020": 123.3,
+      "pm25_2019": 91.4,
+      "pm25_2020": 45.5,
+      "no2_2019": 17.4,
+      "no2_2020": 17.4,
+      "aqi_change_pct": -41.9
+    },
+    {
+      "City": "Visakhapatnam",
+      "aqi_2019": 106.8,
+      "aqi_2020": 62.8,
+      "pm25_2019": 34.8,
+      "pm25_2020": 18.1,
+      "no2_2019": 30.3,
+      "no2_2020": 25.1,
+      "aqi_change_pct": -41.2
+    },
+    {
+      "City": "Amritsar",
+      "aqi_2019": 114.6,
+      "aqi_2020": 68.8,
+      "pm25_2019": 52.6,
+      "pm25_2020": 26.3,
+      "no2_2019": 25.9,
+      "no2_2020": 14.7,
+      "aqi_change_pct": -40.0
+    },
+    {
+      "City": "Bengaluru",
+      "aqi_2019": 116.2,
+      "aqi_2020": 70.6,
+      "pm25_2019": 45.7,
+      "pm25_2020": 23.5,
+      "no2_2019": 30.9,
+      "no2_2020": 13.4,
+      "aqi_change_pct": -39.2
+    },
+    {
+      "City": "Amaravati",
+      "aqi_2019": 88.8,
+      "aqi_2020": 54.0,
+      "pm25_2019": 28.6,
+      "pm25_2020": 20.2,
+      "no2_2019": 15.5,
+      "no2_2020": 5.7,
+      "aqi_change_pct": -39.2
+    },
+    {
+      "City": "Jaipur",
+      "aqi_2019": 143.8,
+      "aqi_2020": 96.5,
+      "pm25_2019": 53.3,
+      "pm25_2020": 33.0,
+      "no2_2019": 33.1,
+      "no2_2020": 15.2,
+      "aqi_change_pct": -32.9
+    },
+    {
+      "City": "Hyderabad",
+      "aqi_2019": 105.6,
+      "aqi_2020": 71.8,
+      "pm25_2019": 41.4,
+      "pm25_2020": 30.6,
+      "no2_2019": 32.6,
+      "no2_2020": 23.4,
+      "aqi_change_pct": -32.0
+    },
+    {
+      "City": "Kolkata",
+      "aqi_2019": 93.8,
+      "aqi_2020": 65.8,
+      "pm25_2019": 45.2,
+      "pm25_2020": 22.7,
+      "no2_2019": 26.7,
+      "no2_2020": 9.4,
+      "aqi_change_pct": -29.9
+    },
+    {
+      "City": "Mumbai",
+      "aqi_2019": 95.6,
+      "aqi_2020": 69.8,
+      "pm25_2019": 19.6,
+      "pm25_2020": 19.5,
+      "no2_2019": 17.6,
+      "no2_2020": 8.0,
+      "aqi_change_pct": -27.0
+    },
+    {
+      "City": "Chennai",
+      "aqi_2019": 94.5,
+      "aqi_2020": 69.6,
+      "pm25_2019": 39.7,
+      "pm25_2020": 18.4,
+      "no2_2019": 15.3,
+      "no2_2020": 8.2,
+      "aqi_change_pct": -26.3
+    },
+    {
+      "City": "Thiruvananthapuram",
+      "aqi_2019": 73.6,
+      "aqi_2020": 57.6,
+      "pm25_2019": 25.2,
+      "pm25_2020": 18.4,
+      "no2_2019": 5.2,
+      "no2_2020": 8.9,
+      "aqi_change_pct": -21.7
+    },
+    {
+      "City": "Brajrajnagar",
+      "aqi_2019": 166.2,
+      "aqi_2020": 135.8,
+      "pm25_2019": 71.9,
+      "pm25_2020": 57.5,
+      "no2_2019": 21.1,
+      "no2_2020": 2.9,
+      "aqi_change_pct": -18.3
+    },
+    {
+      "City": "Patna",
+      "aqi_2019": 163.7,
+      "aqi_2020": 133.9,
+      "pm25_2019": 57.2,
+      "pm25_2020": 36.7,
+      "no2_2019": 28.7,
+      "no2_2020": 25.3,
+      "aqi_change_pct": -18.2
+    },
+    {
+      "City": "Talcher",
+      "aqi_2019": 144.5,
+      "aqi_2020": 119.2,
+      "pm25_2019": 39.8,
+      "pm25_2020": 37.2,
+      "no2_2019": 12.9,
+      "no2_2020": 11.5,
+      "aqi_change_pct": -17.5
+    },
+    {
+      "City": "Guwahati",
+      "aqi_2019": 121.6,
+      "aqi_2020": 103.2,
+      "pm25_2019": 46.3,
+      "pm25_2020": 44.1,
+      "no2_2019": 15.5,
+      "no2_2020": 11.2,
+      "aqi_change_pct": -15.1
+    },
+    {
+      "City": "Jorapokhar",
+      "aqi_2019": 125.9,
+      "aqi_2020": 128.5,
+      "pm25_2019": 58.3,
+      "pm25_2020": 45.5,
+      "no2_2019": 8.6,
+      "no2_2020": 10.8,
+      "aqi_change_pct": 2.1
+    }
+  ],
+  "lockdown_overall": {
+    "aqi_2019": 147.3,
+    "aqi_2020": 93.9,
+    "pm25_2019": 52.4,
+    "pm25_2020": 32.7,
+    "no2_2019": 26.0,
+    "no2_2020": 14.8
+  },
+  "corr": {
+    "PM25": 0.725,
+    "CO": 0.556,
+    "NO2": 0.511,
+    "NO": 0.444,
+    "NOx": 0.441,
+    "SO2": 0.434,
+    "PM10": 0.305,
+    "Toluene": 0.265,
+    "O3": 0.208,
+    "Xylene": 0.153,
+    "Benzene": 0.039,
+    "NH3": 0.003
+  },
+  "metrics": [
+    {
+      "Model": "Random Forest",
+      "RMSE": 37.337,
+      "MAE": 21.758,
+      "R2": 0.908
+    },
+    {
+      "Model": "Gradient Boosted Trees",
+      "RMSE": 40.312,
+      "MAE": 21.753,
+      "R2": 0.893
+    },
+    {
+      "Model": "Decision Tree",
+      "RMSE": 43.797,
+      "MAE": 24.855,
+      "R2": 0.874
+    },
+    {
+      "Model": "Linear Regression",
+      "RMSE": 48.821,
+      "MAE": 30.468,
+      "R2": 0.843
+    }
+  ],
+  "best": "Random Forest",
+  "importance": {
+    "PM2.5": 0.382,
+    "CO": 0.2198,
+    "PM10": 0.1534,
+    "NO2": 0.0616,
+    "NOx": 0.0476,
+    "NO": 0.0393,
+    "SO2": 0.0338,
+    "Toluene": 0.023,
+    "O3": 0.0123,
+    "NH3": 0.0105,
+    "Xylene": 0.0087,
+    "Benzene": 0.0082
+  },
+  "example_pred": 364.2,
+  "daily_check": {
+    "total_days": 29531.0,
+    "calculated_days": 25680.0,
+    "recorded_days": 24850.0,
+    "gaps_filled": 895.0,
+    "both_days": 24785.0,
+    "mae": 29.7,
+    "bucket_match_pct": 70.5,
+    "corr": 0.884
+  },
+  "dominant": [
+    {
+      "Dominant": "PM2.5",
+      "days": 10632,
+      "pct": "41.4"
+    },
+    {
+      "Dominant": "PM10",
+      "days": 9825,
+      "pct": "38.3"
+    },
+    {
+      "Dominant": "CO",
+      "days": 3953,
+      "pct": "15.4"
+    },
+    {
+      "Dominant": "O3",
+      "days": 798,
+      "pct": "3.1"
+    },
+    {
+      "Dominant": "NO2",
+      "days": 378,
+      "pct": "1.5"
+    },
+    {
+      "Dominant": "SO2",
+      "days": 80,
+      "pct": "0.3"
+    },
+    {
+      "Dominant": "NH3",
+      "days": 14,
+      "pct": "0.1"
+    }
+  ]
+}

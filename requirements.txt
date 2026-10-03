@@ -1,0 +1,6 @@
+pyspark>=3.5,<5.0      # Spark 4.x needs Java 17+; Spark 3.5 works with Java 8/11/17
+pandas>=2.0
+matplotlib>=3.7
+seaborn>=0.13
+setuptools             # needed by PySpark 3.5 MLlib on Python 3.12
+jupyter                # only to open the notebook locally

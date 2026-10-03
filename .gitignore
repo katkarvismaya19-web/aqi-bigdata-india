@@ -1,0 +1,25 @@
+# Dataset (download it yourself, see data/README.md)
+data/*.csv
+data/*.zip
+
+# Large generated file used only by the web dashboard
+outputs/daily_aqi_web.json
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Spark local files
+spark-warehouse/
+metastore_db/
+derby.log
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
