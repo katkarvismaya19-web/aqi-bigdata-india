@@ -105,3 +105,10 @@ Apache Spark (PySpark) · Spark SQL · Spark MLlib · Python · pandas · Matplo
 - Vopani (Rohan Rao), *Air Quality Data in India (2015–2020)*, Kaggle, based on CPCB data.
 - Central Pollution Control Board, *National Air Quality Index*, 2014.
 - Zaharia et al., "Apache Spark: A Unified Engine for Big Data Processing," *Communications of the ACM*, 2016.
+
+## Run the dashboard
+
+1. Run the Spark backend: python src/aqi_project.py
+2. Start the dashboard: python run_dashboard.py
+3. It opens http://localhost:8000/dashboard/ in your browser.
+
