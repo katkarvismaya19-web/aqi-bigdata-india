@@ -51,6 +51,7 @@ spark = (SparkSession.builder
          .appName("AQI_BigData_Analysis")
          .master("local[*]")              # use all CPU cores; on a cluster this is set by spark-submit
          .config("spark.sql.shuffle.partitions", "8")
+         .config("spark.driver.memory", "4g")
          .getOrCreate())
 spark.sparkContext.setLogLevel("ERROR")
 print("Spark version:", spark.version)
