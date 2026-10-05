@@ -1,1 +1,160 @@
-<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=dashboard/"><title>AQI Insight</title><a href="dashboard/">Open AQI Insight</a>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Air Quality in 26 Indian Cities (2015–2020): Big Data Analysis with Hadoop and Spark</title>
+<meta name="description" content="Average AQI for Delhi, Mumbai, Bengaluru, Chennai, Kolkata and 21 more Indian cities from CPCB data (2015–2020), analysed with Hadoop HDFS, Apache Spark and MLlib. Includes the COVID-19 lockdown impact, seasonal trends and live AQI.">
+<meta name="author" content="Vismaya Katkar">
+<link rel="canonical" href="https://katkarvismaya19-web.github.io/aqi-bigdata-india/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://katkarvismaya19-web.github.io/aqi-bigdata-india/">
+<meta property="og:title" content="Air Quality in 26 Indian Cities (2015–2020): Big Data Analysis with Hadoop and Spark">
+<meta property="og:description" content="Average AQI for Delhi, Mumbai, Bengaluru, Chennai, Kolkata and 21 more Indian cities from CPCB data (2015–2020), analysed with Hadoop HDFS, Apache Spark and MLlib. Includes the COVID-19 lockdown impact, seasonal trends and live AQI.">
+<meta property="og:image" content="https://katkarvismaya19-web.github.io/aqi-bigdata-india/docs/screenshots/india-overview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='16' fill='none' stroke='%230B6A63' stroke-width='3'/%3E%3Ccircle cx='18' cy='18' r='10' fill='none' stroke='%23E0A92A' stroke-width='3'/%3E%3Ccircle cx='18' cy='18' r='4' fill='%23EE8A2E'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "AQI Insight: Big Data Analysis of Air Quality in Indian Cities", "description": "Average AQI for Delhi, Mumbai, Bengaluru, Chennai, Kolkata and 21 more Indian cities from CPCB data (2015–2020), analysed with Hadoop HDFS, Apache Spark and MLlib. Includes the COVID-19 lockdown impact, seasonal trends and live AQI.", "url": "https://katkarvismaya19-web.github.io/aqi-bigdata-india/", "codeRepository": "https://github.com/katkarvismaya19-web/aqi-bigdata-india", "programmingLanguage": ["Python", "JavaScript"], "keywords": "air quality index, AQI, India, CPCB, Apache Spark, Hadoop, HDFS, PySpark, MLlib, big data, COVID-19 lockdown", "author": {"@type": "Person", "name": "Vismaya Katkar", "sameAs": ["https://github.com/katkarvismaya19-web", "https://www.linkedin.com/in/vismaya-katkar-22808b278/"]}}</script>
+<style>
+:root{--ground:#F4F5F1;--surface:#fff;--ink:#142220;--ink2:#2C3A37;--muted:#4F5D59;--line:#DDE1DA;--teal:#0B6A63;--teal-d:#08504B;
+--display:"Space Grotesk","Segoe UI",system-ui,sans-serif;--body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:var(--body);color:var(--ink);background:var(--ground);font-size:17px;line-height:1.6}
+a{color:var(--teal)}a:hover{color:var(--teal-d)}
+:focus-visible{outline:3px solid #5FA8A1;outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:20px;color:var(--ink);text-decoration:none}
+.top nav a{margin-left:22px;font-weight:500;text-decoration:none;color:var(--ink2)}
+.top nav a:hover{color:var(--teal)}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-0.02em;line-height:1.1}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px;align-items:end;padding:48px 0 72px}
+.hero h1{font-size:clamp(40px,5.6vw,68px);font-weight:700;max-width:12ch}
+.lede{font-size:19px;color:var(--ink2);max-width:34rem;margin:22px 0 30px}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;min-height:50px;padding:0 22px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid #C9D0C8;color:var(--ink);background:var(--surface)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary:hover{background:var(--teal-d);color:#fff}
+.year{background:var(--ink);color:#E8EEEB;border-radius:18px;padding:26px 26px 18px}
+.year h2{font-size:17px;font-weight:600;letter-spacing:0}
+.year p{margin:4px 0 0;font-size:14px;color:#A9B8B3}
+.bars{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;height:260px}
+.bars li{display:grid;grid-template-rows:auto 1fr auto;justify-items:center;gap:6px;min-width:0;height:100%}
+.bars .t{display:flex;align-items:flex-end;width:100%;height:100%}
+.bars .b{display:block;width:100%;height:var(--h);background:var(--c);border-radius:6px 6px 2px 2px;transform-origin:bottom;animation:grow .9s cubic-bezier(.2,.7,.2,1) both}
+.bars .v{font-size:12px;color:#C3CFCB;font-variant-numeric:tabular-nums}
+.bars .m{font-size:12px;color:#A9B8B3}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.bars .b{animation:none}}
+.scale{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:18px;font-size:12px;color:#C3CFCB}
+.scale span{display:inline-flex;align-items:center;gap:6px}.scale i{width:10px;height:10px;border-radius:3px;display:inline-block}
+section{padding:64px 0;border-top:1px solid var(--line)}
+section h2{font-size:clamp(28px,3.2vw,38px);font-weight:600;max-width:22ch}
+.intro{color:var(--ink2);max-width:40rem;margin:14px 0 0}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:34px 40px;margin:40px 0 0;padding:0}
+.facts div{margin:0}
+.facts dt{font-family:var(--display);font-size:42px;font-weight:600;line-height:1;letter-spacing:-0.02em}
+.facts dd{margin:10px 0 0;color:var(--ink2);max-width:30ch}
+.split{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:56px;align-items:start}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-weight:500;color:var(--muted);font-size:13px;padding:12px 14px;border-bottom:1px solid var(--line)}
+td{padding:9px 14px;border-top:1px solid #EEF0EC;vertical-align:middle}
+td b{font-weight:500;display:block}.st{font-size:13px;color:#5E6B67}
+.num{text-align:right;font-variant-numeric:tabular-nums}td.r{color:#6B7874;width:44px}
+.chip{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+ol.steps{margin:28px 0 0;padding:0;list-style:none;counter-reset:s;display:grid;gap:0}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;padding:18px 0;border-top:1px solid var(--line)}
+ol.steps li::before{content:counter(s);font-family:var(--display);font-weight:600;font-size:22px;color:var(--teal)}
+ol.steps h3{font-size:19px;font-weight:600;letter-spacing:-0.01em}
+ol.steps p{margin:4px 0 0;color:var(--ink2)}
+.stack{margin:22px 0 0;color:var(--ink2)}
+.note{font-size:14px;color:var(--muted);max-width:44rem}
+footer{border-top:1px solid var(--line);padding:32px 0 48px;font-size:15px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+@media (max-width:900px){.hero,.split{grid-template-columns:1fr;gap:36px}.hero{padding-top:20px}.top nav{display:none}}
+@media (max-width:520px){.wrap{padding:0 18px}.bars{height:200px;gap:3px}.bars .v{font-size:10px}.year{padding:20px 14px 14px}}
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="brand" href="./"><svg width="30" height="30" viewBox="0 0 36 36" fill="none" aria-hidden="true"><circle cx="18" cy="18" r="16" stroke="#0B6A63" stroke-width="2"/><circle cx="18" cy="18" r="10" stroke="#E0A92A" stroke-width="2"/><circle cx="18" cy="18" r="4" fill="#EE8A2E"/></svg>AQI Insight</a>
+  <nav aria-label="Page"><a href="#findings">Findings</a><a href="#cities">Cities</a><a href="#how">How it was built</a><a href="https://github.com/katkarvismaya19-web/aqi-bigdata-india">GitHub</a></nav>
+</header>
+
+<main>
+<div class="wrap hero">
+  <div>
+    <h1>How clean is the air in India's cities?</h1>
+    <p class="lede">Five years of government air quality data for 26 Indian cities, from 2015 to 2020, processed with Hadoop and Apache Spark. See which cities are most polluted, how the air changes through the year, what the COVID-19 lockdown did, and the live AQI today.</p>
+    <div class="actions">
+      <a class="btn primary" href="dashboard/">Open the dashboard</a>
+      <a class="btn" href="https://github.com/katkarvismaya19-web/aqi-bigdata-india">View the code</a>
+    </div>
+  </div>
+  <figure class="year" style="margin:0">
+    <h2>A year of India's air</h2>
+    <p>National average AQI by month, all 26 cities, 2015–2020</p>
+    <ol class="bars" aria-label="Average AQI by month"><li style="--h:93.3%;--c:#EE8A2E"><span class="v">224</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Jan</span></li><li style="--h:80.4%;--c:#F2C14E"><span class="v">193</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Feb</span></li><li style="--h:66.2%;--c:#F2C14E"><span class="v">159</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Mar</span></li><li style="--h:58.3%;--c:#F2C14E"><span class="v">140</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Apr</span></li><li style="--h:56.7%;--c:#F2C14E"><span class="v">136</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">May</span></li><li style="--h:50.0%;--c:#F2C14E"><span class="v">120</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Jun</span></li><li style="--h:46.2%;--c:#F2C14E"><span class="v">111</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Jul</span></li><li style="--h:47.5%;--c:#F2C14E"><span class="v">114</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Aug</span></li><li style="--h:47.9%;--c:#F2C14E"><span class="v">115</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Sep</span></li><li style="--h:75.4%;--c:#F2C14E"><span class="v">181</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Oct</span></li><li style="--h:95.4%;--c:#EE8A2E"><span class="v">229</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Nov</span></li><li style="--h:93.3%;--c:#EE8A2E"><span class="v">224</span><span class="t" aria-hidden="true"><span class="b"></span></span><span class="m">Dec</span></li></ol>
+    <figcaption class="scale"><span><i style="background:#1B7F3B"></i>Good</span><span><i style="background:#7CB342"></i>Satisfactory</span><span><i style="background:#F2C14E"></i>Moderate</span><span><i style="background:#EE8A2E"></i>Poor</span><span><i style="background:#D2382F"></i>Very poor</span></figcaption>
+  </figure>
+</div>
+
+<section id="findings"><div class="wrap">
+  <h2>What five years of data show</h2>
+  <p class="intro">The analysis covers 29,531 daily readings from the Central Pollution Control Board (CPCB). Air quality is worst from November to January, when cold, still air traps pollution, and best during the monsoon.</p>
+  <dl class="facts">
+    <div><dt>259.5</dt><dd>Delhi's average AQI, the highest among major cities, rated Poor</dd></div>
+    <div><dt>−36%</dt><dd>Drop in average AQI during the 2020 COVID-19 lockdown, compared with the same weeks in 2019</dd></div>
+    <div><dt>−43%</dt><dd>Drop in nitrogen dioxide (NO2) during the lockdown, as traffic and industry slowed</dd></div>
+    <div><dt>0.73</dt><dd>Correlation between PM2.5 and AQI, the strongest of any pollutant</dd></div>
+    <div><dt>229</dt><dd>Average AQI in November, the worst month nationally; July is cleanest at 111</dd></div>
+    <div><dt>0.908</dt><dd>R² of the Random Forest model that predicts AQI from pollutant levels</dd></div>
+  </dl>
+</div></section>
+
+<section id="cities"><div class="wrap split">
+  <div>
+    <h2>All 26 cities, ranked by average AQI</h2>
+    <p class="intro">Average Air Quality Index from 2015 to 2020, most polluted first. Each city has its own page in the dashboard with monthly and seasonal trends, pollutant levels against safe limits, and its live AQI.</p>
+    <p class="note">Ahmedabad's very high average is driven by unusually high carbon monoxide readings, which point to a likely sensor or reporting issue. Cities joined the monitoring network in different years.</p>
+    <p><a class="btn" href="dashboard/">Explore a city</a></p>
+  </div>
+  <div class="tablewrap"><table>
+    <caption class="note" style="text-align:left;padding:12px 14px 0">Average AQI by city, CPCB data, 2015–2020</caption>
+    <thead><tr><th class="num">#</th><th>City</th><th class="num">Avg AQI</th><th>Category</th></tr></thead>
+    <tbody><tr><td class="num r">1</td><td><b>Ahmedabad</b><span class="st">Gujarat</span></td><td class="num">388.3</td><td><span class="chip" style="background:#D2382F;color:#fff">Very Poor</span></td></tr><tr><td class="num r">2</td><td><b>Delhi</b><span class="st">Delhi (NCT)</span></td><td class="num">259.5</td><td><span class="chip" style="background:#EE8A2E;color:#142220">Poor</span></td></tr><tr><td class="num r">3</td><td><b>Patna</b><span class="st">Bihar</span></td><td class="num">240.8</td><td><span class="chip" style="background:#EE8A2E;color:#142220">Poor</span></td></tr><tr><td class="num r">4</td><td><b>Gurugram</b><span class="st">Haryana</span></td><td class="num">225.1</td><td><span class="chip" style="background:#EE8A2E;color:#142220">Poor</span></td></tr><tr><td class="num r">5</td><td><b>Lucknow</b><span class="st">Uttar Pradesh</span></td><td class="num">218.0</td><td><span class="chip" style="background:#EE8A2E;color:#142220">Poor</span></td></tr><tr><td class="num r">6</td><td><b>Talcher</b><span class="st">Odisha</span></td><td class="num">172.9</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">7</td><td><b>Jorapokhar</b><span class="st">Jharkhand</span></td><td class="num">159.3</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">8</td><td><b>Brajrajnagar</b><span class="st">Odisha</span></td><td class="num">150.3</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">9</td><td><b>Kolkata</b><span class="st">West Bengal</span></td><td class="num">140.6</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">10</td><td><b>Guwahati</b><span class="st">Assam</span></td><td class="num">140.1</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">11</td><td><b>Jaipur</b><span class="st">Rajasthan</span></td><td class="num">133.7</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">12</td><td><b>Bhopal</b><span class="st">Madhya Pradesh</span></td><td class="num">132.8</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">13</td><td><b>Amritsar</b><span class="st">Punjab</span></td><td class="num">119.9</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">14</td><td><b>Visakhapatnam</b><span class="st">Andhra Pradesh</span></td><td class="num">117.3</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">15</td><td><b>Chennai</b><span class="st">Tamil Nadu</span></td><td class="num">114.5</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">16</td><td><b>Hyderabad</b><span class="st">Telangana</span></td><td class="num">109.2</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">17</td><td><b>Mumbai</b><span class="st">Maharashtra</span></td><td class="num">105.4</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">18</td><td><b>Kochi</b><span class="st">Kerala</span></td><td class="num">104.3</td><td><span class="chip" style="background:#F2C14E;color:#142220">Moderate</span></td></tr><tr><td class="num r">19</td><td><b>Chandigarh</b><span class="st">Chandigarh (UT)</span></td><td class="num">96.5</td><td><span class="chip" style="background:#7CB342;color:#142220">Satisfactory</span></td></tr><tr><td class="num r">20</td><td><b>Amaravati</b><span class="st">Andhra Pradesh</span></td><td class="num">95.3</td><td><span class="chip" style="background:#7CB342;color:#142220">Satisfactory</span></td></tr><tr><td class="num r">21</td><td><b>Bengaluru</b><span class="st">Karnataka</span></td><td class="num">94.3</td><td><span class="chip" style="background:#7CB342;color:#142220">Satisfactory</span></td></tr><tr><td class="num r">22</td><td><b>Ernakulam</b><span class="st">Kerala</span></td><td class="num">92.4</td><td><span class="chip" style="background:#7CB342;color:#142220">Satisfactory</span></td></tr><tr><td class="num r">23</td><td><b>Thiruvananthapuram</b><span class="st">Kerala</span></td><td class="num">75.9</td><td><span class="chip" style="background:#7CB342;color:#142220">Satisfactory</span></td></tr><tr><td class="num r">24</td><td><b>Coimbatore</b><span class="st">Tamil Nadu</span></td><td class="num">73.0</td><td><span class="chip" style="background:#7CB342;color:#142220">Satisfactory</span></td></tr><tr><td class="num r">25</td><td><b>Shillong</b><span class="st">Meghalaya</span></td><td class="num">53.8</td><td><span class="chip" style="background:#7CB342;color:#142220">Satisfactory</span></td></tr><tr><td class="num r">26</td><td><b>Aizawl</b><span class="st">Mizoram</span></td><td class="num">34.8</td><td><span class="chip" style="background:#1B7F3B;color:#fff">Good</span></td></tr></tbody>
+  </table></div>
+</div></section>
+
+<section id="how"><div class="wrap split">
+  <div>
+    <h2>How it was built</h2>
+    <p class="intro">A big data pipeline that runs on a Hadoop cluster with Apache Spark, from raw files to the published dashboard.</p>
+    <p class="stack"><b>Stack:</b> Hadoop HDFS, Apache Spark 4.2 (PySpark, Spark SQL, MLlib), Parquet, Docker, Python, pandas, Matplotlib, JavaScript, GitHub Pages.</p>
+  </div>
+  <ol class="steps">
+    <li><div><h3>Store the data in HDFS</h3><p>The raw CPCB dataset is loaded into a Hadoop HDFS cluster (NameNode and DataNode, run with Docker).</p></div></li>
+    <li><div><h3>Process it with Spark</h3><p>Spark reads the data from HDFS into distributed DataFrames, removes duplicates and invalid readings, and adds year, month and season.</p></div></li>
+    <li><div><h3>Analyse with Spark SQL</h3><p>City rankings, monthly and seasonal trends, AQI categories, pollutant correlations, and the 2020 lockdown compared with 2019.</p></div></li>
+    <li><div><h3>Predict AQI with MLlib</h3><p>Linear Regression, Decision Tree, Random Forest and Gradient Boosted Trees are trained and compared. Random Forest scores R² 0.908.</p></div></li>
+    <li><div><h3>Recalculate every day's AQI</h3><p>Each city-day's AQI is computed from raw pollutant levels with the official CPCB sub-index method, filling 895 days with no recorded AQI.</p></div></li>
+    <li><div><h3>Write back and publish</h3><p>Results are saved to HDFS as Parquet, partitioned by city, and exported to the dashboard, which also shows live AQI for all 26 cities.</p></div></li>
+  </ol>
+</div></section>
+
+<section><div class="wrap">
+  <h2>About the data</h2>
+  <p class="intro">Historical data: <i>Air Quality Data in India (2015–2020)</i> on Kaggle, compiled from Central Pollution Control Board data. AQI follows the CPCB National Air Quality Index: each pollutant gets a sub-index, and the day's AQI is the highest one. Live AQI uses modelled pollutant levels from the Copernicus Atmosphere Monitoring Service via <a href="https://open-meteo.com/">Open-Meteo</a>, converted with the same formula, so it can differ from official station readings.</p>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <span>Built by <b style="color:var(--ink)">Vismaya Katkar</b> as a big data analysis project.</span>
+  <span><a href="https://github.com/katkarvismaya19-web/aqi-bigdata-india">GitHub</a> &nbsp; <a href="https://www.linkedin.com/in/vismaya-katkar-22808b278/">LinkedIn</a></span>
+</div></footer>
+</body>
+</html>

@@ -291,7 +291,8 @@ The calculated AQI correlates at 0.884 with the AQI recorded by CPCB. They diffe
 ```
 aqi-bigdata-india/
 ├── README.md
-├── index.html                    # GitHub Pages entry, redirects to dashboard/
+├── index.html                    # public landing page (findings, city ranking, search-engine metadata)
+├── sitemap.xml                   # for Google Search Console
 ├── requirements.txt
 ├── run_dashboard.py              # serves the dashboard locally
 ├── hadoop/
