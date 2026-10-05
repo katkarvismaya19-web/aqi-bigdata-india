@@ -36,7 +36,11 @@ from pyspark.ml.regression import (LinearRegression, DecisionTreeRegressor,
                                    RandomForestRegressor, GBTRegressor)
 from pyspark.ml.evaluation import RegressionEvaluator
 
-DATA_PATH = "data/city_day.csv"   # run from the repo root: python src/aqi_project.py
+# Input path. Default: local file. With the Hadoop setup (hadoop/), this is an HDFS path,
+# e.g. hdfs://namenode:9000/aqi/city_day.csv, set through the AQI_DATA_PATH environment variable.
+DATA_PATH = os.environ.get("AQI_DATA_PATH", "data/city_day.csv")
+ON_HDFS = DATA_PATH.startswith("hdfs://")
+HDFS_OUT = DATA_PATH.rsplit("/", 1)[0] + "/output" if ON_HDFS else None
 OUT = "outputs"
 os.makedirs(OUT, exist_ok=True)
 sns.set_theme(style="whitegrid")
@@ -49,12 +53,14 @@ results = {}
 # %%
 spark = (SparkSession.builder
          .appName("AQI_BigData_Analysis")
-         .master("local[*]")              # use all CPU cores; on a cluster this is set by spark-submit
+         .master(os.environ.get("SPARK_MASTER", "local[*]"))   # all CPU cores by default
          .config("spark.sql.shuffle.partitions", "8")
-         .config("spark.driver.memory", "4g")    # Random Forest needs more than the 1 GB default
+         .config("spark.driver.memory", os.environ.get("SPARK_DRIVER_MEMORY", "4g"))  # Random Forest needs more than 1 GB
          .getOrCreate())
 spark.sparkContext.setLogLevel("ERROR")
 print("Spark version:", spark.version)
+print("Reading data from:", DATA_PATH, "(HDFS)" if ON_HDFS else "(local file)")
+results["data_source"] = {"path": DATA_PATH, "storage": "HDFS" if ON_HDFS else "local file"}
 
 raw = spark.read.csv(DATA_PATH, header=True, inferSchema=True)
 raw.printSchema()
@@ -478,6 +484,14 @@ for city, g in daily_pd.groupby("City"):
 with open(f"{OUT}/daily_aqi_web.json", "w") as f:
     json.dump(web, f, separators=(",", ":"))
 print("Saved", len(daily_pd), "daily rows")
+
+# On HDFS, also write the processed datasets back to the cluster as Parquet (columnar, compressed),
+# partitioned by city so later jobs can read one city without scanning the rest.
+if ON_HDFS:
+    clean.write.mode("overwrite").parquet(f"{HDFS_OUT}/clean_city_day")
+    daily.select(out_cols).write.mode("overwrite").partitionBy("City").parquet(f"{HDFS_OUT}/daily_aqi")
+    print("Wrote Parquet to HDFS:", f"{HDFS_OUT}/clean_city_day", "and", f"{HDFS_OUT}/daily_aqi")
+    results["data_source"]["hdfs_outputs"] = [f"{HDFS_OUT}/clean_city_day", f"{HDFS_OUT}/daily_aqi"]
 
 
 # %% [markdown]

@@ -1,0 +1,52 @@
+# Hadoop HDFS cluster (NameNode + DataNode) and a Spark container that runs the pipeline.
+# Run all commands from the repo root. See the "Running on Hadoop (HDFS)" section of README.md.
+name: aqi-hadoop
+
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    hostname: namenode
+    environment:
+      CLUSTER_NAME: aqi-cluster
+    env_file: hadoop.env
+    ports:
+      - "9870:9870"   # HDFS web UI: http://localhost:9870
+      - "9000:9000"   # HDFS file system (hdfs://namenode:9000)
+    volumes:
+      - namenode:/hadoop/dfs/name
+      - ../data:/data:ro   # lets us copy city_day.csv into HDFS with hdfs dfs -put
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    hostname: datanode
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file: hadoop.env
+    ports:
+      - "9864:9864"   # DataNode web UI
+    volumes:
+      - datanode:/hadoop/dfs/data
+    depends_on:
+      - namenode
+
+  spark:
+    build: .
+    image: aqi-spark:4.2.0
+    container_name: spark
+    working_dir: /app
+    environment:
+      AQI_DATA_PATH: hdfs://namenode:9000/aqi/city_day.csv
+      SPARK_DRIVER_MEMORY: 3g
+      PYSPARK_SUBMIT_ARGS: "--conf spark.hadoop.dfs.replication=1 pyspark-shell"   # one DataNode, so one copy of each block
+    volumes:
+      - ..:/app        # the repo: code in, charts and dashboard data out
+    command: python src/aqi_project.py
+    depends_on:
+      - namenode
+      - datanode
+
+volumes:
+  namenode:
+  datanode:

@@ -1,4 +1,12 @@
 {
+  "data_source": {
+    "path": "hdfs://namenode:9000/aqi/city_day.csv",
+    "storage": "HDFS",
+    "hdfs_outputs": [
+      "hdfs://namenode:9000/aqi/output/clean_city_day",
+      "hdfs://namenode:9000/aqi/output/daily_aqi"
+    ]
+  },
   "overview": {
     "rows": 29531,
     "cols": 16,
