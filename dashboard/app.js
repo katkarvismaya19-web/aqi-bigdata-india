@@ -5,6 +5,8 @@
  *   ../outputs/daily_aqi_web.json   – every city-day's pollutants, recorded AQI and backend-calculated AQI
  * The Daily AQI page recalculates every day's AQI in the browser with the CPCB formula
  * and checks it against the backend's value.
+ * The Live AQI page pulls the last 48 hours of modelled pollutant levels from Open-Meteo (CAMS)
+ * and converts them to India's AQI with the same CPCB formula.
  */
 (function () {
   "use strict";
@@ -19,11 +21,28 @@
   const KEYS = ["PM25", "PM10", "NO2", "SO2", "CO", "O3", "NH3"];
   const NAMES = ["PM2.5", "PM10", "NO2", "SO2", "CO", "O3", "NH3"];
   const UNITS = ["µg/m³", "µg/m³", "µg/m³", "µg/m³", "mg/m³", "µg/m³", "µg/m³"];
+  // Same CPCB breakpoints as src/aqi_project.py; used when daily_aqi_web.json is not loaded yet
+  const BP_DEFAULT = { aqi: [0, 50, 100, 200, 300, 400, 500], conc: {
+    PM25: [0, 30, 60, 90, 120, 250, 380], PM10: [0, 50, 100, 250, 350, 430, 510], NO2: [0, 40, 80, 180, 280, 400, 520],
+    SO2: [0, 40, 80, 380, 800, 1600, 2400], CO: [0, 1, 2, 10, 17, 34, 51], O3: [0, 50, 100, 168, 208, 748, 1288],
+    NH3: [0, 200, 400, 800, 1200, 1800, 2400] } };
+  const COORDS = {
+    Ahmedabad: [23.0225, 72.5714], Aizawl: [23.7271, 92.7176], Amaravati: [16.5131, 80.5165], Amritsar: [31.634, 74.8723],
+    Bengaluru: [12.9716, 77.5946], Bhopal: [23.2599, 77.4126], Brajrajnagar: [21.816, 83.9214], Chandigarh: [30.7333, 76.7794],
+    Chennai: [13.0827, 80.2707], Coimbatore: [11.0168, 76.9558], Delhi: [28.6139, 77.209], Ernakulam: [9.9816, 76.2999],
+    Gurugram: [28.4595, 77.0266], Guwahati: [26.1445, 91.7362], Hyderabad: [17.385, 78.4867], Jaipur: [26.9124, 75.7873],
+    Jorapokhar: [23.7, 86.41], Kochi: [9.9312, 76.2673], Kolkata: [22.5726, 88.3639], Lucknow: [26.8467, 80.9462],
+    Mumbai: [19.076, 72.8777], Patna: [25.5941, 85.1376], Shillong: [25.5788, 91.8933], Talcher: [20.95, 85.2333],
+    Thiruvananthapuram: [8.5241, 76.9366], Visakhapatnam: [17.6868, 83.2185] };
+  const LIVE_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
+  const LIVE_TTL = 10 * 60 * 1000;   // refetch at most every 10 minutes
 
   let DATA = null;      // dashboard_data.json
   let DAILY = null;     // daily_aqi_web.json
   let IDX = null;       // city -> date -> row
   let VERIFY = null;    // backend vs browser check over all days
+  let LIVE = null, LIVE_AT = 0, LIVE_PENDING = null;   // city -> live result
+  let liveCity = "Mumbai";
   const daily = { mode: "all", date: null, city: "Mumbai", year: null, view: "calc", sel: null,
                   calc: { PM25: "180", PM10: "300", NO2: "60", SO2: "15", CO: "1.5", O3: "40", NH3: "" } };
 
@@ -64,7 +83,8 @@
   // ---------- CPCB AQI (same breakpoints as the Spark backend) ----------
   function subIndex(k, c) {
     if (c === null || c === undefined || c === "" || isNaN(c)) return null;
-    const bp = DAILY.breakpoints.conc[k], A = DAILY.breakpoints.aqi;
+    const B = DAILY ? DAILY.breakpoints : BP_DEFAULT;
+    const bp = B.conc[k], A = B.aqi;
     for (let i = 1; i < bp.length; i++) {
       if (c <= bp[i] || i === bp.length - 1) return A[i - 1] + (c - bp[i - 1]) * (A[i] - A[i - 1]) / (bp[i] - bp[i - 1]);
     }
@@ -79,6 +99,58 @@
     return { aqi, si, dom: d >= 0 ? NAMES[d] : null };
   }
 
+  // ---------- live AQI (Open-Meteo / CAMS -> CPCB formula) ----------
+  const istNowHour = () => new Date(Date.now() + 330 * 60000).toISOString().slice(0, 13) + ":00";
+  function meanOf(arr, a, b, need) {
+    const v = arr.slice(a, b + 1).filter((x) => x !== null && x !== undefined);
+    return v.length >= need ? v.reduce((t, x) => t + x, 0) / v.length : null;
+  }
+  // CPCB averaging: 24-hour mean for PM2.5, PM10, NO2, SO2 (16 of 24 hours needed),
+  // highest 8-hour mean in the last 24 hours for CO and O3 (6 of 8 hours needed).
+  function windowVals(h, end) {
+    if (end < 23) return null;
+    const a = end - 23;
+    const avg24 = (k) => { const m = meanOf(h[k], a, end, 16); return m === null ? null : Math.round(m * 10) / 10; };
+    const max8 = (k, scale, nd) => {
+      let best = null;
+      for (let s0 = a; s0 + 7 <= end; s0++) { const m = meanOf(h[k], s0, s0 + 7, 6); if (m !== null && (best === null || m > best)) best = m; }
+      return best === null ? null : Math.round(best * scale * 10 ** nd) / 10 ** nd;
+    };
+    return [avg24("pm2_5"), avg24("pm10"), avg24("nitrogen_dioxide"), avg24("sulphur_dioxide"),
+            max8("carbon_monoxide", 0.001, 2), max8("ozone", 1, 1), null];   // CO µg/m³ -> mg/m³; NH3 not modelled for India
+  }
+  function liveFromHourly(h) {
+    const now = istNowHour();
+    let end = -1;
+    for (let i = 0; i < h.time.length; i++) if (h.time[i] <= now && h.pm2_5[i] !== null) end = i;
+    const vals = windowVals(h, end);
+    if (!vals) return null;
+    const trend = [];
+    for (let e = Math.max(23, end - 23); e <= end; e++) { const v = windowVals(h, e); trend.push({ t: h.time[e], aqi: v ? aqiOf(v).aqi : null }); }
+    return { time: h.time[end], vals, res: aqiOf(vals), trend };
+  }
+  function fetchLive(force) {
+    if (!force && LIVE && Date.now() - LIVE_AT < LIVE_TTL) return Promise.resolve(LIVE);
+    if (LIVE_PENDING) return LIVE_PENDING;
+    const names = Object.keys(COORDS);
+    const q = new URLSearchParams({
+      latitude: names.map((n) => COORDS[n][0]).join(","), longitude: names.map((n) => COORDS[n][1]).join(","),
+      hourly: "pm2_5,pm10,nitrogen_dioxide,sulphur_dioxide,carbon_monoxide,ozone",
+      past_days: "2", forecast_days: "1", timezone: "Asia/Kolkata" });
+    LIVE_PENDING = fetch(`${LIVE_URL}?${q}`, { cache: "no-store" })
+      .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then((j) => {
+        const arr = Array.isArray(j) ? j : [j];
+        const out = {};
+        names.forEach((n, i) => { out[n] = arr[i] && arr[i].hourly ? liveFromHourly(arr[i].hourly) : null; });
+        LIVE = out; LIVE_AT = Date.now(); return LIVE;
+      })
+      .finally(() => { LIVE_PENDING = null; });
+    return LIVE_PENDING;
+  }
+  const liveTime = (t) => `${fmtDate(t.slice(0, 10))}, ${t.slice(11, 16)} IST`;
+  const liveNote = `<span class="small">Live values are modelled estimates from the CAMS air quality forecast (via <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>), converted to India's AQI with the CPCB formula used in this project. They can differ from CPCB station readings.</span>`;
+
   // ---------- layout ----------
   function shell(active, inner) {
     const u = user() || { name: "Guest" };
@@ -87,15 +159,18 @@
     return `
       <header class="topbar">
         <div class="brand">${logo(30)}<span class="brand-name">AQI Insight</span><span class="pill">CPCB data, ${esc(DATA.overview.start)} – ${esc(DATA.overview.end)}</span></div>
+        <label class="jump"><span class="hidden">Go to city</span><select id="jumpCity" aria-label="Go to city">
+          <option value="">Go to city…</option>${cities.map((c) => `<option ${active === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></label>
         <div class="user"><span class="muted">${esc(u.name)}</span><span class="avatar" aria-hidden="true">${esc(initials)}</span>
           <button class="btn btn-small" data-action="logout">Sign out</button></div>
       </header>
       <div class="shell">
         <nav class="side" aria-label="Dashboard">
           <a href="#/overview" class="strong ${active === "overview" ? "active" : ""}">India overview</a>
+          <a href="#/live" class="strong ${active === "live" ? "active" : ""}"><span>Live AQI</span><span class="live-tag">LIVE</span></a>
           <a href="#/daily" class="strong ${active === "daily" ? "active" : ""}">Daily AQI calendar</a>
           <span class="group">Cities</span>
-          ${cities.map((c) => `<a href="#/city/${encodeURIComponent(c)}" class="${active === c ? "active" : ""}"><span>${esc(c)}</span><span class="dot" style="background:${cat(DATA.cities[c].avg).bg}"></span></a>`).join("")}
+          ${cities.map((c) => `<a href="#/city/${encodeURIComponent(c)}" class="city-link ${active === c ? "active" : ""}"><span>${esc(c)}</span><span class="dot" style="background:${cat(DATA.cities[c].avg).bg}"></span></a>`).join("")}
         </nav>
         <main class="main" id="main">${inner}</main>
       </div>`;
@@ -249,6 +324,7 @@
         <a class="back" href="#/overview">← India overview</a><h1 style="font-size:38px">${esc(name)}</h1>
         <span class="muted" style="font-size:15px">${esc(c.state)} · data from ${esc(c.first)} to ${esc(c.last)}</span></div>
         <span class="rank-badge">Rank ${c.rank} of ${Object.keys(DATA.cities).length} (1 = most polluted)</span></div>
+      <section class="card live-card" id="cityLive" data-city="${esc(name)}"><div class="loading" style="padding:0;border:0">Fetching live AQI for ${esc(name)}…</div></section>
       <div class="grid-kpi">
         ${kpi("Average AQI", fmt(c.avg), chip(c.avg))}
         ${kpi("Average PM2.5", fmt(c.pm25), `<span class="small" style="color:${c.pm25 > 60 ? "#8E1F18" : ""}">µg/m³ · limit 60</span>`)}
@@ -281,6 +357,80 @@
       <section class="card" style="background:${k.soft}"><h2>Health advice: ${k.name} air on an average day</h2><p style="margin:0">${k.advice}</p>
         <span class="small">Based on CPCB health guidance for the AQI category.</span></section>`;
     app.innerHTML = shell(name, inner);
+    fetchLive().then(() => fillCityLive(name)).catch(() => {
+      const box = document.getElementById("cityLive");
+      if (box && box.dataset.city === name) box.innerHTML = `<span class="muted">Live AQI is unavailable right now. <a href="#/live">Try the Live AQI page</a>.</span>`;
+    });
+  }
+  function fillCityLive(name) {
+    const box = document.getElementById("cityLive");
+    if (!box || box.dataset.city !== name) return;
+    const L = LIVE[name];
+    if (!L || L.res.aqi === null) { box.innerHTML = `<span class="muted">Not enough live data for ${esc(name)} right now.</span>`; return; }
+    const k = cat(L.res.aqi);
+    box.style.background = k.soft;
+    box.innerHTML = `<div class="live-row"><div class="calc-result" style="padding:0"><b style="color:${k.ink}">${L.res.aqi}</b>
+      <div><b style="font-size:16px;color:${k.ink}">Live now: ${k.name}</b><div class="small" style="color:#2C3A37">Dominant ${L.res.dom || "–"} · ${liveTime(L.time)}</div></div></div>
+      <div class="stat-line">${NAMES.slice(0, 6).map((n, j) => `<span>${n} <b>${L.vals[j] ?? "–"}</b></span>`).join("")}</div>
+      <a class="btn btn-small" href="#/live" data-action="liveCity" data-city="${esc(name)}">Live details</a></div>`;
+  }
+
+  // ---------- live AQI page ----------
+  async function viewLive() {
+    app.innerHTML = shell("live", `<div class="loading">Fetching live air quality for ${Object.keys(COORDS).length} cities…</div>`);
+    try { await fetchLive(); renderLive(); }
+    catch (e) { liveError(); }
+  }
+  function liveError() {
+    const main = document.getElementById("main");
+    if (main) main.innerHTML = `<div class="error-box"><h2 style="margin-bottom:8px">Live data unavailable</h2>
+      <p>Could not reach the live air quality service. Check your internet connection and try again.</p>
+      <button class="btn" data-action="liveRefresh">Try again</button></div>`;
+  }
+  function renderLive() {
+    const main = document.getElementById("main");
+    if (!main || !LIVE) return;
+    const names = Object.keys(COORDS).sort();
+    if (!LIVE[liveCity]) liveCity = names.find((n) => LIVE[n]) || names[0];
+    const L = LIVE[liveCity];
+    const ranked = names.filter((n) => LIVE[n] && LIVE[n].res.aqi !== null).sort((a, b) => LIVE[b].res.aqi - LIVE[a].res.aqi);
+    const updated = new Date(LIVE_AT).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+    let detail;
+    if (!L || L.res.aqi === null) {
+      detail = `<section class="card"><h2>${esc(liveCity)}</h2><span class="muted">Not enough live data to calculate an AQI right now.</span></section>`;
+    } else {
+      const k = cat(L.res.aqi), tr = L.trend.filter((x) => x.aqi !== null);
+      const tmax = tr.length ? Math.max(...tr.map((x) => x.aqi)) : 1, scale = tmax > 300 ? 520 : 300;
+      detail = `<div class="grid-2">
+        <section class="card" style="background:${k.soft}"><div class="card-head"><h2>${esc(liveCity)} right now</h2><span class="muted">${liveTime(L.time)}</span></div>
+          <div class="calc-result" style="padding:0"><b style="color:${k.ink};font-size:64px">${L.res.aqi}</b>
+            <div><b style="font-size:18px;color:${k.ink}">${k.name}</b><div class="small" style="color:#2C3A37">Dominant pollutant: ${L.res.dom || "–"}</div></div></div>
+          <p style="margin:0">${k.advice}</p></section>
+        <section class="card"><div class="card-head"><h2>How this AQI was calculated</h2><span class="muted">24-hour averages (CO and O3: highest 8-hour average)</span></div>
+          <div class="si-row small"><span>Pollutant</span><span>Level</span><span>Sub-index</span><span style="text-align:right">Value</span></div>
+          ${KEYS.slice(0, 6).map((key, j) => { const c = L.vals[j], s = L.res.si[j], dom = L.res.dom === NAMES[j];
+            return `<div class="si-row"><span style="font-weight:${dom ? 600 : 400}">${NAMES[j]}</span><span class="muted">${c === null ? "no data" : c + " " + UNITS[j]}</span>
+              <span class="track"><span style="width:${s === null ? 0 : Math.min(s / 500 * 100, 100)}%;background:${s === null ? "#EEF0EC" : dom ? "#142220" : cat(s).bg}"></span></span><span style="text-align:right;font-weight:${dom ? 600 : 400}">${s === null ? "–" : Math.round(s)}</span></div>`; }).join("")}
+          <button class="btn btn-small" data-action="liveToCalc" style="align-self:flex-start">Open in AQI calculator</button></section></div>
+        <section class="card"><div class="card-head"><h2>Last 24 hours in ${esc(liveCity)}</h2><span class="muted">AQI at each hour, from the 24 hours before it</span></div>
+          <div class="vchart" style="height:180px" role="img" aria-label="Hourly AQI, last 24 hours">${L.trend.map((x) => `<div class="vcol" title="${x.t.slice(11, 16)} · AQI ${x.aqi ?? "n/a"}"><i style="height:${x.aqi === null ? 0 : Math.round(x.aqi / scale * 150)}px;background:${cat(x.aqi).bg}"></i></div>`).join("")}</div>
+          <div class="vlabels">${L.trend.map((x, i) => `<span>${i % 3 === 0 ? x.t.slice(11, 13) : ""}</span>`).join("")}</div>
+          ${legend()}</section>`;
+    }
+    main.innerHTML = `
+      <div class="page-head"><div style="display:flex;flex-direction:column;gap:6px"><h1>Live AQI</h1>
+        <span class="muted" style="font-size:15px">Current air quality for all ${names.length} cities · fetched ${updated}</span></div>
+        <div class="toolbar">
+          <label class="field" style="font-size:13px">City<select id="liveCitySelect" style="min-width:220px;height:44px">${names.map((n) => `<option ${n === liveCity ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></label>
+          <button class="btn" data-action="liveRefresh" style="min-height:44px">Refresh</button></div></div>
+      ${detail}
+      <section class="card"><div class="card-head"><h2>All cities right now</h2><span class="muted">Most polluted first · click a city for its live details</span></div>
+        <div class="rank-grid">${ranked.map((n, i) => { const a = LIVE[n].res.aqi;
+          return `<button class="rank-row live-rank ${n === liveCity ? "on" : ""}" data-action="liveCity" data-city="${esc(n)}"><span style="color:#6B7874">${i + 1}</span>
+          <span class="city-cell"><span style="font-weight:500">${esc(n)}</span><small>${esc((DATA.cities[n] || {}).state || "")}</small></span>
+          <span class="track"><span style="width:${Math.min(a / 400 * 100, 100)}%;background:${cat(a).bg}"></span></span>
+          <span style="text-align:right;font-weight:600">${a}</span></button>`; }).join("")}</div>
+        ${liveNote}</section>`;
   }
 
   // ---------- daily AQI ----------
@@ -320,9 +470,11 @@
         ${kpi("Gaps filled", `<span style="color:#0B6A63">${intIN(v.filled)}</span>`, `<span class="small">days with no recorded AQI, now calculated</span>`)}
         ${kpi("Same category as recorded AQI", `${(v.same / v.both * 100).toFixed(1)}%`, `<span class="small">of ${intIN(v.both)} days with both values</span>`)}
       </div>
-      <div class="seg" role="group" aria-label="View" style="align-self:flex-start">
-        <button data-action="mode" data-mode="all" aria-pressed="${daily.mode === "all"}">All cities</button>
-        <button data-action="mode" data-mode="city" aria-pressed="${daily.mode === "city"}">One city, full calendar</button></div>`;
+      <div class="toolbar">
+        <div class="seg" role="group" aria-label="View">
+          <button data-action="mode" data-mode="all" aria-pressed="${daily.mode === "all"}">All cities</button>
+          <button data-action="mode" data-mode="city" aria-pressed="${daily.mode === "city"}">One city, full calendar</button></div>
+        <label class="field" style="font-size:13px">City<select id="citySelect" style="min-width:220px;height:44px">${Object.keys(DAILY.cities).sort().map((c) => `<option ${c === daily.city ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></label></div>`;
     const body = daily.mode === "all" ? dailyAll() : dailyCity();
     document.getElementById("main").innerHTML = head + body + breakdownAndCalc() + formulaCard();
   }
@@ -405,7 +557,6 @@
     }).join("");
     return `<section class="card">
       <div class="toolbar">
-        <label class="field" style="font-size:13px">City<select id="citySelect" style="min-width:220px;height:44px">${Object.keys(DAILY.cities).map((c) => `<option ${c === daily.city ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></label>
         <div class="field" style="font-size:13px">Year<div class="years" role="group" aria-label="Year">${years.map((y) => `<button data-action="year" data-year="${y}" aria-pressed="${y === year}">${y}</button>`).join("")}</div></div>
         <div class="field" style="font-size:13px;margin-left:auto">Colour days by<div class="seg"><button data-action="view" data-view="calc" aria-pressed="${daily.view === "calc"}">Calculated AQI</button><button data-action="view" data-view="rec" aria-pressed="${daily.view === "rec"}">Recorded AQI</button></div></div>
       </div>
@@ -473,10 +624,15 @@
     else if (a === "pickDay") { daily.city = t.dataset.city; daily.sel = t.dataset.date; daily.year = Number(t.dataset.date.slice(0, 4)); renderDaily(); document.getElementById("breakdown").scrollIntoView({ behavior: "smooth", block: "start" }); }
     else if (a === "year") { daily.year = Number(t.dataset.year); daily.sel = null; renderDaily(); }
     else if (a === "view") { daily.view = t.dataset.view; renderDaily(); }
+    else if (a === "liveRefresh") { const m = document.getElementById("main"); if (m) m.innerHTML = `<div class="loading">Refreshing live data…</div>`; fetchLive(true).then(renderLive).catch(liveError); }
+    else if (a === "liveCity") { liveCity = t.dataset.city; if (location.hash === "#/live") { renderLive(); window.scrollTo({ top: 0, behavior: "smooth" }); } }
+    else if (a === "liveToCalc") { const L = LIVE && LIVE[liveCity]; if (L) { KEYS.forEach((k, j) => { daily.calc[k] = L.vals[j] === null ? "" : String(L.vals[j]); }); go("#/daily"); } }
     else if (a === "useDay") { const r = IDX[daily.city][daily.sel]; if (r) { KEYS.forEach((k, j) => { daily.calc[k] = r[j + 1] === null ? "" : String(r[j + 1]); }); renderDaily(); } }
   });
   document.addEventListener("change", (e) => {
-    if (e.target.id === "citySelect") { daily.city = e.target.value; daily.year = null; daily.sel = null; renderDaily(); }
+    if (e.target.id === "citySelect") { daily.city = e.target.value; daily.mode = "city"; daily.year = null; daily.sel = null; renderDaily(); }
+    if (e.target.id === "jumpCity" && e.target.value) go("#/city/" + encodeURIComponent(e.target.value));
+    if (e.target.id === "liveCitySelect") { liveCity = e.target.value; renderLive(); }
     if (e.target.id === "dateInput" && e.target.value >= "2015-01-01" && e.target.value <= "2020-07-01") { daily.date = e.target.value; renderDaily(); }
   });
   document.addEventListener("input", (e) => {
@@ -495,6 +651,7 @@
     if (h === "#/login") { if (user()) { go("#/overview"); return; } viewLogin(); }
     else if (h === "#/overview") viewOverview();
     else if (h === "#/daily") viewDaily();
+    else if (h === "#/live") viewLive();
     else if (h.startsWith("#/city/")) viewCity(decodeURIComponent(h.slice(7)));
     else go("#/overview");
     window.scrollTo(0, 0);

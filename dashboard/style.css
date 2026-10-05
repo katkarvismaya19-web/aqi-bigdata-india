@@ -162,3 +162,17 @@ tr.picked td { background: var(--teal-soft); }
 .error-box { border-color: #E9B6B1; background: #FDF3F2; color: #6E1A14; }
 .error-box code { background: #F6E1DE; padding: 2px 6px; border-radius: 4px; }
 @media (prefers-reduced-motion: no-preference) { .main > * { animation: none; } }
+
+/* ---------- city jump + live ---------- */
+.jump select { height: 40px; min-width: 180px; padding: 0 12px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); font-size: 14px; }
+.live-tag { padding: 1px 7px; border-radius: 999px; background: #D2382F; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; }
+.live-card { gap: 10px; }
+.live-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+.live-rank { width: 100%; border: 0; background: transparent; text-align: left; font: inherit; }
+.live-rank.on { background: var(--teal-soft); }
+@media (max-width: 520px) { .jump { order: 3; width: 100%; } .jump select { width: 100%; } }
+@media (max-width: 860px) {
+  .side { max-width: none; flex-basis: 100%; flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .side a { flex: 1 1 auto; justify-content: center; gap: 8px; border: 1px solid var(--line-2); }
+  .side .group, .side a.city-link { display: none; }
+}

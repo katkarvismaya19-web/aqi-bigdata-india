@@ -37,7 +37,11 @@ Vismaya Katkar
 - **Machine learning:** four Spark MLlib regressors compared on a held-out test set. The best, Random Forest, predicts AQI with **R² = 0.908**.
 - **CPCB AQI engine:** every city-day's AQI is recalculated from raw pollutant levels using the official sub-index method. This fills **895 days** where no AQI was recorded.
 - **Verified end to end:** the web dashboard recalculates all 29,531 days in the browser and matches the Spark backend on **100%** of them.
+<<<<<<< HEAD
 - **Interactive dashboard:** India overview, a page for each of the 26 cities, a daily AQI calendar, and an AQI calculator.
+=======
+- **Interactive dashboard:** India overview, a page for each of the 26 cities, a daily AQI calendar, an AQI calculator, and **live AQI** for all 26 cities.
+>>>>>>> 5d8a2b3 (Fix city dropdown, add live AQI)
 
 ## Key results
 
@@ -215,6 +219,10 @@ spark-submit src/aqi_project.py
 | Sign in | Demo sign-in (format checks only; nothing is stored or sent), or continue as guest |
 | India overview | National KPIs, all 26 cities ranked, pollution drivers, regional comparison, monthly pattern, AQI category share, lockdown impact, model comparison |
 | City pages | For each city: rank, monthly and seasonal AQI, pollutants against safe limits, category share, yearly trend, record days, lockdown effect, health advice |
+<<<<<<< HEAD
+=======
+| Live AQI | Current AQI for all 26 cities, ranked, with the pollutant breakdown and the last 24 hours. Pollutant levels come from the CAMS forecast via [Open-Meteo](https://open-meteo.com/) (free, no API key) and are converted to India's AQI in the browser with the same CPCB formula as the Spark pipeline. Values are modelled estimates and can differ from CPCB station readings. Needs an internet connection. |
+>>>>>>> 5d8a2b3 (Fix city dropdown, add live AQI)
 | Daily AQI calendar | Every city on any chosen date, a month grid of all cities, a full-year calendar for one city, and a per-day breakdown of how the AQI was calculated |
 | AQI calculator | Enter pollutant levels and get the AQI and dominant pollutant instantly |
 

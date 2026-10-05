@@ -2,9 +2,6 @@
 data/*.csv
 data/*.zip
 
-# Large generated file used only by the web dashboard
-outputs/daily_aqi_web.json
-
 # Python / Jupyter
 __pycache__/
 *.pyc
